@@ -1,20 +1,36 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import 'react-native-gesture-handler';
+import { useCallback } from 'react';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 
-export default function App() {
+import AppNav from './src/navigation/AppNav';
+import { AuthProvider } from './src/context/AuthContext';
+
+SplashScreen.preventAutoHideAsync();
+
+const App = () => {
+  const [isLoaded] = useFonts({
+    'bitter-bold': require('./assets/fonts/Bitter-Bold.ttf'),
+    'bitter-light': require('./assets/fonts/Bitter-Light.ttf'),
+    'bitter-medium': require('./assets/fonts/Bitter-Medium.ttf'),
+    'noto-bold': require('./assets/fonts/NotoSans-Bold.ttf'),
+    'noto-light': require('./assets/fonts/NotoSans-Light.ttf'),
+    'noto-regular': require('./assets/fonts/NotoSans-Regular.ttf'),
+  });
+
+  const handleOnLayout = useCallback(async () => {
+    if (isLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [isLoaded]);
+
+  if (!isLoaded) return null;
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <AuthProvider>
+      <AppNav handleOnLayout={handleOnLayout} />
+    </AuthProvider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
